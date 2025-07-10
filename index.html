@@ -16,11 +16,11 @@
   </head>
   <body>
     <h1>Green Peak AI Putt Detector</h1>
-    <video id="webcam" autoplay playsinline width="400" height="300"></video>
+    <div id="webcam-container"></div>
     <div id="label-container"></div>
 
     <script type="text/javascript">
-      const URL = "https://raw.githubusercontent.com/your-username/your-repo/main/";
+      const URL = "https://raw.githubusercontent.com/mikeybrg/Greenpeak/main/";
       let model, webcam, labelContainer, maxPredictions;
 
       async function init() {
@@ -30,12 +30,12 @@
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
 
-        webcam = new tmImage.Webcam(400, 300, true); // flip camera
-        await webcam.setup(); // request access
+        webcam = new tmImage.Webcam(400, 300, true); // width, height, flip
+        await webcam.setup();
         await webcam.play();
         window.requestAnimationFrame(loop);
 
-        document.getElementById("webcam").appendChild(webcam.canvas);
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
         labelContainer = document.getElementById("label-container");
         for (let i = 0; i < maxPredictions; i++) {
           labelContainer.appendChild(document.createElement("div"));
@@ -51,6 +51,17 @@
       async function predict() {
         const prediction = await model.predict(webcam.canvas);
         for (let i = 0; i < maxPredictions; i++) {
+          const classPrediction =
+            prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(1) + "%";
+          labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>
+ions; i++) {
           const classPrediction =
             prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(1) + "%";
           labelContainer.childNodes[i].innerHTML = classPrediction;
