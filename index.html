@@ -15,13 +15,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
     <script>
-      const URL = "./";
+      const modelURL = "https://mikeybrg.github.io/Greenpeak/model.json";
+      const metadataURL = "https://mikeybrg.github.io/Greenpeak/metadata.json";
+
       let model, webcam, labelContainer;
 
       async function init() {
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-
         model = await tmImage.load(modelURL, metadataURL);
         webcam = new tmImage.Webcam(400, 400, true); // width, height, flip
         await webcam.setup();
