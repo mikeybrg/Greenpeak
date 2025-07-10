@@ -3,46 +3,46 @@
   <head>
     <title>Green Peak AI Putt Detector</title>
     <style>
-      body { font-family: sans-serif; text-align: center; padding: 30px; }
-      video { width: 90%; max-width: 400px; border: 1px solid #ccc; }
-      .label { font-size: 20px; margin-top: 10px; }
+      body {
+        font-family: sans-serif;
+        text-align: center;
+        padding: 30px;
+      }
+      video {
+        width: 90%;
+        max-width: 400px;
+        border: 1px solid #ccc;
+        margin-top: 20px;
+      }
+      .label {
+        font-size: 20px;
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
     <h1>Green Peak AI Putt Detector</h1>
     <video id="webcam" autoplay playsinline muted></video>
-    <div id="label-container" class="label"></div>
+    <div id="label-container" class="label">Waiting for video...</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
     <script>
-      const modelURL = "https://mikeybrg.github.io/Greenpeak/model.json";
-      const metadataURL = "https://mikeybrg.github.io/Greenpeak/metadata.json";
+      async function initWebcam() {
+        const video = document.getElementById('webcam');
+        const label = document.getElementById('label-container');
 
-      let model, webcam, labelContainer;
-
-      async function init() {
-        model = await tmImage.load(modelURL, metadataURL);
-        webcam = new tmImage.Webcam(400, 400, true); // width, height, flip
-        await webcam.setup();
-        await webcam.play();
-        window.requestAnimationFrame(loop);
-
-        document.getElementById("webcam").replacewith(webcam.canvas);
-        labelContainer = document.getElementById("label-container");
-      }
-
-      async function loop() {
-        webcam.update();
-        const prediction = await model.predict(webcam.canvas);
-        let outputText = "";
-        for (let i = 0; i < prediction.length; i++) {
-          outputText += `${prediction[i].className}: ${(prediction[i].probability * 100).toFixed(1)}%<br>`;
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" }, // back camera
+            audio: false
+          });
+          video.srcObject = stream;
+          label.textContent = "Webcam connected ✅";
+        } catch (err) {
+          label.textContent = "❌ Error accessing webcam: " + err.message;
         }
-        labelContainer.innerHTML = outputText;
-        window.requestAnimationFrame(loop);
       }
 
-      init();
+      window.onload = initWebcam;
     </script>
   </body>
 </html>
